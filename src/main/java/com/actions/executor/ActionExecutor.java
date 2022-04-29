@@ -73,7 +73,7 @@ public class ActionExecutor<T> {
 
         final ActionName nextAction = actionName.getNextAction();
         if (nextAction == null) { // last step
-            return ActionResult.<T>builder().status(ActionStatus.SUCCESS).build();
+            return ActionResult.success(target);
         }
 
         log.debug("Continue with next action {}", nextAction);
