@@ -14,6 +14,6 @@ public interface Action<T> {
     /**
      * Executes the action for the passed target object.
      */
-    ActionResult execute(final T target);
+    ActionResult<T> execute(final T target);
 
 }

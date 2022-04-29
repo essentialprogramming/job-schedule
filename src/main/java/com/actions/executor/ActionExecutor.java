@@ -4,6 +4,7 @@ import com.actions.model.Action;
 import com.actions.model.ActionName;
 import com.actions.model.ActionResult;
 import com.actions.model.ActionStatus;
+import com.actions.utils.model.Failure;
 import com.actions.utils.objects.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,10 +32,10 @@ public class ActionExecutor<T> {
      * @param target     target
      * @return ActionResult
      */
-    public ActionResult executeAction(final ActionName actionName, T target) {
+    public ActionResult<T> executeAction(final ActionName actionName, T target) {
         Preconditions.assertNotNull(actionName, "action");
 
-        final ActionResult actionResult;
+        final ActionResult<T> actionResult;
         final Optional<Action<T>> action = actions.stream().filter(findActionByName(actionName)).findFirst();
         try {
             actionResult = action
@@ -42,9 +43,9 @@ public class ActionExecutor<T> {
                     .orElseGet(() -> ActionResult.error("ACTION-001", "Couldn't find action " + actionName));
         } catch (final RuntimeException e) {
             log.error("Error executing action {}", actionName, e);
-            return ActionResult.builder()
+            return ActionResult.<T>builder()
                     .status(ActionStatus.FAILED)
-                    .errorMessage(e.getMessage())
+                    .failure(Failure.builder().description(e.getMessage()).build())
                     .build();
         }
 
@@ -68,11 +69,11 @@ public class ActionExecutor<T> {
      * @param target     The target that shall be resumed.
      * @return ActionResult the result of the last step
      */
-    public ActionResult resume(final ActionName actionName, final T target) {
+    public ActionResult<T> resume(final ActionName actionName, final T target) {
 
         final ActionName nextAction = actionName.getNextAction();
         if (nextAction == null) { // last step
-            return ActionResult.builder().status(ActionStatus.SUCCESS).build();
+            return ActionResult.<T>builder().status(ActionStatus.SUCCESS).build();
         }
 
         log.debug("Continue with next action {}", nextAction);
