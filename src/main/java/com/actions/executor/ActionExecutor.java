@@ -4,7 +4,6 @@ import com.actions.model.Action;
 import com.actions.model.ActionName;
 import com.actions.model.ActionResult;
 import com.actions.model.ActionStatus;
-import com.actions.utils.model.Failure;
 import com.actions.utils.objects.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,10 +42,7 @@ public class ActionExecutor<T> {
                     .orElseGet(() -> ActionResult.error("ACTION-001", "Couldn't find action " + actionName));
         } catch (final RuntimeException e) {
             log.error("Error executing action {}", actionName, e);
-            return ActionResult.<T>builder()
-                    .status(ActionStatus.FAILED)
-                    .failure(Failure.builder().description(e.getMessage()).build())
-                    .build();
+            return ActionResult.error("RUNTIME-001", e.getMessage());
         }
 
         if (ActionStatus.SUCCESS.equals(actionResult.getStatus()) && actionName.hasNextAction()) {
