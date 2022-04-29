@@ -17,6 +17,7 @@ public class ActionResult<T> {
     public boolean isSuccess() {
         return ActionStatus.SUCCESS.equals(status);
     }
+
     public boolean isError() {
         return ActionStatus.FAILED.equals(status);
     }
@@ -38,9 +39,9 @@ public class ActionResult<T> {
     public static <T> ActionResult<T> error(final String errorCode, final String errorMessage) {
         return ActionResult.<T>builder()
                 .failure(Failure.builder()
-                        .code(errorCode)
-                        .description(errorMessage)
-                        .build())
+                           .code(errorCode)
+                           .description(errorMessage)
+                           .build())
                 .status(ActionStatus.FAILED).build();
     }
 
@@ -59,6 +60,9 @@ public class ActionResult<T> {
         return value;
     }
 
+    /**
+     * Result of unsuccessful action
+     */
     public Failure getFailure() {
         return failure;
     }

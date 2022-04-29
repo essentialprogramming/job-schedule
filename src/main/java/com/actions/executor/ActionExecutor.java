@@ -4,7 +4,6 @@ import com.actions.model.Action;
 import com.actions.model.ActionName;
 import com.actions.model.ActionResult;
 import com.actions.model.ActionStatus;
-import com.actions.utils.model.Failure;
 import com.actions.utils.objects.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +14,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 /**
- * This class can be used to execute a single action.
+ * This class executes a requested action.
  */
 @Service
 @RequiredArgsConstructor
@@ -26,7 +25,7 @@ public class ActionExecutor<T> {
 
 
     /**
-     * execute action
+     * Execute action
      *
      * @param actionName action name
      * @param target     target
@@ -43,10 +42,7 @@ public class ActionExecutor<T> {
                     .orElseGet(() -> ActionResult.error("ACTION-001", "Couldn't find action " + actionName));
         } catch (final RuntimeException e) {
             log.error("Error executing action {}", actionName, e);
-            return ActionResult.<T>builder()
-                    .status(ActionStatus.FAILED)
-                    .failure(Failure.builder().description(e.getMessage()).build())
-                    .build();
+            return ActionResult.error("RUNTIME-001", e.getMessage());
         }
 
         if (ActionStatus.SUCCESS.equals(actionResult.getStatus()) && actionName.hasNextAction()) {
@@ -63,17 +59,17 @@ public class ActionExecutor<T> {
     }
 
     /**
-     * Resumes the order submit after the given step.
+     * Resumes the action after the given step.
      *
-     * @param actionName The current step after that the order submit shall be resumed.
+     * @param actionName The current step after that the action shall be resumed.
      * @param target     The target that shall be resumed.
-     * @return ActionResult the result of the last step
+     * @return ActionResult The result of the last step
      */
     public ActionResult<T> resume(final ActionName actionName, final T target) {
 
         final ActionName nextAction = actionName.getNextAction();
         if (nextAction == null) { // last step
-            return ActionResult.<T>builder().status(ActionStatus.SUCCESS).build();
+            return ActionResult.success(target);
         }
 
         log.debug("Continue with next action {}", nextAction);
