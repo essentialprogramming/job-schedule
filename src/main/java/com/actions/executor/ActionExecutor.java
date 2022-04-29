@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 /**
- * This class can be used to execute a single action.
+ * This class executes a requested action.
  */
 @Service
 @RequiredArgsConstructor
@@ -25,7 +25,7 @@ public class ActionExecutor<T> {
 
 
     /**
-     * execute action
+     * Execute action
      *
      * @param actionName action name
      * @param target     target
@@ -59,11 +59,11 @@ public class ActionExecutor<T> {
     }
 
     /**
-     * Resumes the order submit after the given step.
+     * Resumes the action after the given step.
      *
-     * @param actionName The current step after that the order submit shall be resumed.
+     * @param actionName The current step after that the action shall be resumed.
      * @param target     The target that shall be resumed.
-     * @return ActionResult the result of the last step
+     * @return ActionResult The result of the last step
      */
     public ActionResult<T> resume(final ActionName actionName, final T target) {
 
