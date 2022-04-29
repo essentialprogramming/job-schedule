@@ -1,4 +1,4 @@
-package com.actions;
+package com.server;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

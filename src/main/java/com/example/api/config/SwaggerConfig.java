@@ -16,14 +16,14 @@ import io.swagger.v3.oas.models.info.Info;
 public class SwaggerConfig {
 
     /**
-     * User API
+     * Example Action Executor API
      */
     @Bean
     public GroupedOpenApi exampleApi() {
         final String[] packagesToScan = {"com.example.api.controller"};
         return GroupedOpenApi
                 .builder()
-                .group("Example API")
+                .group("Action Executor API")
                 .packagesToScan(packagesToScan)
                 .pathsToMatch("/v1/**")
                 .addOpenApiCustomiser(exampleApiCustomizer())
