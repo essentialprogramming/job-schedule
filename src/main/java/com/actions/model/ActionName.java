@@ -12,7 +12,8 @@ public enum ActionName {
     START_WORKING_ON_STORY(1),
     IMPLEMENT_REQUIREMENTS(2),
     SEND_PULL_REQUEST_EVENT(3),
-    SEND_STORY_COMPLETE_NOTIFICATION(4);
+    MERGE_CHANGES(4),
+    SEND_STORY_COMPLETE_NOTIFICATION(5);
 
     private final Integer executionSequence;
 
