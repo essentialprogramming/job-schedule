@@ -1,5 +1,6 @@
 package com.api.controller;
 
+import com.actions.executor.ActionEventPublisher;
 import com.api.output.StoryJSON;
 import com.api.service.StoryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,9 +10,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,5 +32,17 @@ public class StoryController {
     )
     public List<StoryJSON> getAll() {
         return storyService.getAll();
+    }
+
+
+    @PostMapping("/review")
+    @Operation(summary = "Review pull request", description = "Review pull request for story",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Returns 200 if the operation was successful.")
+            }
+    )
+    public void review(@RequestParam("storyKey") String storyKey) {
+
+        storyService.reviewPullRequest(storyKey);
     }
 }

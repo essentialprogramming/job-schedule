@@ -12,6 +12,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class StoryJSON implements Serializable {
 
+    @Schema(example = "r4nD0mK3yf0R5tory")
+    private String key;
+
     @Schema(example = "Authentication flow")
     private String name;
 

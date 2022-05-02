@@ -15,6 +15,7 @@ public class StoryMapper {
 
     public static StoryJSON entityToJSON(final Story story) {
         return StoryJSON.builder()
+                .key(story.getStoryKey())
                 .name(story.getName())
                 .status(story.getStatus().getValue())
                 .assignee(story.getAssignee())

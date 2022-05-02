@@ -26,28 +26,10 @@ public class SendPullRequest implements Action<Story> {
     @Override
     public ActionResult<Story> execute(Story story) {
 
-        log.info("Sending pull request for story {}. Status {}.", story.getName(), story.getStatus());
         story.setStatus(Status.PULL_REQUEST);
-        // thread sleep
-        log.info("Waiting for pull request review for story {}. Status {}.", story.getName(), story.getStatus());
+        log.info("Pull request for story {} has been sent. Status {}.", story.getName(), story.getStatus());
+        log.info("Waiting for pull request review...");
 
-        park(() -> story);
-
-        log.info("Pull request review received for story {}. Status {}", story.getName(), story.getStatus());
-
-        return ActionResult.success();
-    }
-
-    private static <T> void park(Callable execution) {
-        final Duration parkPeriod = Duration.of(30, ChronoUnit.SECONDS);
-
-        Thread current = Thread.currentThread();
-
-        log.info("Execution parked for {} ms", parkPeriod.toMillis());
-        LockSupport.parkNanos(execution, parkPeriod.toNanos());
-
-        if (Thread.interrupted()) {
-            current.interrupt();
-        }
+        return ActionResult.waiting();
     }
 }

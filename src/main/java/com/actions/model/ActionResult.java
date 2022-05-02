@@ -26,6 +26,10 @@ public class ActionResult<T> {
         return ActionResult.<T>builder().status(ActionStatus.SUCCESS).build();
     }
 
+    public static <T> ActionResult<T> waiting() {
+        return ActionResult.<T>builder().status(ActionStatus.WAITING).build();
+    }
+
     public static <T> ActionResult<T> success(final T value) {
         if (value == null) {
             throw new IllegalArgumentException("value must not be null");

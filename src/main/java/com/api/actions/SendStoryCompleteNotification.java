@@ -7,6 +7,7 @@ import com.api.entities.Story;
 import com.api.entities.enums.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Slf4j
@@ -17,6 +18,7 @@ public class SendStoryCompleteNotification implements Action<Story> {
         return ActionType.SEND_STORY_COMPLETE_NOTIFICATION;
     }
 
+    @Transactional
     @Override
     public ActionResult<Story> execute(Story story) {
 
