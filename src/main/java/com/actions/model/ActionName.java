@@ -5,22 +5,13 @@ import java.util.Comparator;
 import java.util.stream.IntStream;
 
 /**
- * This enum defines the actions to be used in the action executor.
+ * This interface must be implemented by an enum which defines
+ * the actions to be used in the action executor.
  */
-public enum ActionName {
+public interface ActionName {
 
-    START_WORKING_ON_STORY(1),
-    IMPLEMENT_REQUIREMENTS(2),
-    SEND_PULL_REQUEST_EVENT(3),
-    SEND_STORY_COMPLETE_NOTIFICATION(4);
 
-    private final Integer executionSequence;
-
-    ActionName(final Integer executionSequence) {
-        this.executionSequence = executionSequence;
-    }
-
-    public boolean hasNextAction() {
+    default boolean hasNextAction() {
         return getNextAction() != null;
     }
 
@@ -29,10 +20,10 @@ public enum ActionName {
      *
      * @return Next action or null if the current is already the last in the execution sequence.
      */
-    public ActionName getNextAction() {
+    default ActionName getNextAction() {
         final ActionName[] orderedActions = getOrderedActions();
         return IntStream.range(0, orderedActions.length)
-                .filter(i -> orderedActions[i].executionSequence.equals(this.executionSequence))
+                .filter(i -> orderedActions[i].getExecutionSequence().equals(this.getExecutionSequence()))
                 .filter(i -> i + 1 < orderedActions.length)
                 .mapToObj(i -> orderedActions[i + 1])
                 .findFirst()
@@ -40,18 +31,15 @@ public enum ActionName {
 
     }
 
-    /**
-     * Returns the first action name
-     *
-     * @return first action name
-     */
-    public static ActionName getFirstAction() {
-        return getOrderedActions()[0];
-    }
-
-    private static ActionName[] getOrderedActions() {
-        final ActionName[] orderedActions = values();
-        Arrays.sort(orderedActions, Comparator.comparing(action -> action.executionSequence));
+    default ActionName[] getOrderedActions() {
+        final ActionName[] orderedActions = getActionNames();
+        Arrays.sort(orderedActions, Comparator.comparing(ActionName::getExecutionSequence));
         return orderedActions;
     }
+
+    Integer getExecutionSequence();
+    ActionName[] getActionNames();
+
+    @Override
+    String toString();
 }

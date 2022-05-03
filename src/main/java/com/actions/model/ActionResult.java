@@ -5,6 +5,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Holds a value of an action. Allows handling expected and normal failures.
+ * Unexpected errors (runtime exceptions) should be thrown through exceptions.
+ *
+ * @param <T> The type of the enclosed value
+ */
 @Builder
 @Getter
 @Setter
@@ -26,13 +32,23 @@ public class ActionResult<T> {
         return ActionResult.<T>builder().status(ActionStatus.SUCCESS).build();
     }
 
-    public static <T> ActionResult<T> success(final T value) {
-        if (value == null) {
+    public static <T> ActionResult<T> waiting() {
+        return ActionResult.<T>builder().status(ActionStatus.WAITING).build();
+    }
+
+    /**
+     * Create a successful ActionResult<T>
+     *
+     * @param result a mandatory value the value of the action
+     * @return a Result<T> with the given value and success = true
+     */
+    public static <T> ActionResult<T> success(final T result) {
+        if (result == null) {
             throw new IllegalArgumentException("value must not be null");
         }
         return ActionResult.<T>builder()
                 .status(ActionStatus.SUCCESS)
-                .value(value)
+                .value(result)
                 .build();
     }
 

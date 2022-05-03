@@ -3,13 +3,15 @@ package com.actions.executor;
 import com.actions.model.Action;
 import com.actions.model.ActionName;
 import com.actions.model.ActionResult;
-import com.actions.model.ActionStatus;
 import com.actions.utils.objects.Preconditions;
+import com.google.common.collect.ImmutableMap;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -18,39 +20,64 @@ import java.util.function.Predicate;
  */
 @Service
 @RequiredArgsConstructor
+@Getter
 @Slf4j
 public class ActionExecutor<T> {
 
     private final List<Action<T>> actions;
 
-
     /**
-     * Execute action
+     * Execute an action
      *
-     * @param actionName action name
-     * @param target     target
-     * @return ActionResult
+     * @param actionName       action name
+     * @param target           target
+     * @return ActionResult[]  The results of all executed actions/workflow steps
      */
-    public ActionResult<T> executeAction(final ActionName actionName, T target) {
-        Preconditions.assertNotNull(actionName, "action");
+    public Map<String, ActionResult<T>> executeAction(final ActionName actionName, final T target) {
+        Preconditions.assertNotNull(actionName, "actionName");
+        Preconditions.assertNotNull(target, "target");
 
-        final ActionResult<T> actionResult;
+        final StepExecutor<T> stepExecutor = new StepExecutor<>();
+        return executeAction(actionName, target, stepExecutor);
+    }
+
+    private Map<String, ActionResult<T>> executeAction(final ActionName actionName, final T target, final StepExecutor<T> stepExecutor) {
+
         final Optional<Action<T>> action = actions.stream().filter(findActionByName(actionName)).findFirst();
+        final ActionResult<T> actionResult;
         try {
             actionResult = action
-                    .map(foundAction -> foundAction.execute(target))
+                    .map(foundAction -> stepExecutor.execute(foundAction, target))
                     .orElseGet(() -> ActionResult.error("ACTION-001", "Couldn't find action " + actionName));
         } catch (final RuntimeException e) {
             log.error("Error executing action {}", actionName, e);
-            return ActionResult.error("RUNTIME-001", e.getMessage());
+            return ImmutableMap.of(actionName.toString(), ActionResult.error("RUNTIME-001", e.getMessage()));
         }
 
-        if (ActionStatus.SUCCESS.equals(actionResult.getStatus()) && actionName.hasNextAction()) {
+        if (actionResult.isSuccess() && actionName.hasNextAction()) {
             final ActionName nextAction = actionName.getNextAction();
-            return executeAction(nextAction, target);
+            return executeAction(nextAction, target, stepExecutor);
         }
 
-        return actionResult;
+        return stepExecutor.getExecutionHistory();
+    }
+
+    /**
+     * Resumes the action after the given step.
+     *
+     * @param actionName      The current step after that the action shall be resumed.
+     * @param target          The target that shall be resumed.
+     * @return ActionResult[] The results of all executed actions/workflow steps
+     */
+    public Map<String, ActionResult<T>> resume(final ActionName actionName, final T target) {
+        final StepExecutor<T> stepExecutor = new StepExecutor<>();
+        final ActionName nextAction = actionName.getNextAction();
+        if (nextAction == null) { // last step
+            return ImmutableMap.of(actionName.toString(), ActionResult.success(target));
+        }
+
+        log.debug("Continue with next action {}", nextAction);
+        return executeAction(nextAction, target, stepExecutor);
     }
 
 
@@ -58,21 +85,5 @@ public class ActionExecutor<T> {
         return action -> action.getName().equals(actionName);
     }
 
-    /**
-     * Resumes the action after the given step.
-     *
-     * @param actionName The current step after that the action shall be resumed.
-     * @param target     The target that shall be resumed.
-     * @return ActionResult The result of the last step
-     */
-    public ActionResult<T> resume(final ActionName actionName, final T target) {
 
-        final ActionName nextAction = actionName.getNextAction();
-        if (nextAction == null) { // last step
-            return ActionResult.success(target);
-        }
-
-        log.debug("Continue with next action {}", nextAction);
-        return executeAction(nextAction, target);
-    }
 }
