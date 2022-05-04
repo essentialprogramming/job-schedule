@@ -1,6 +1,7 @@
 package com.api.workflow;
 
 import com.actions.executor.ActionExecutor;
+import com.actions.model.ActionResult;
 import com.actions.model.Workflow;
 import com.api.actions.ActionType;
 import com.api.entities.Story;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,16 +40,16 @@ public class IssueTrackerWorkflow implements Workflow<Story> {
         final Story story = StoryMapper.inputToEntity(storyInput);
         storyRepository.save(story);
 
-        return execute(story);
+        return ExecutionHistoryJSON.builder()
+                .storyKey(story.getStoryKey())
+                .executionSteps(ExecutionStepMapper.toExecutionStepsJSON(execute(story)))
+                .build();
 
     }
 
     @Override
-    public ExecutionHistoryJSON execute(final Story story) {
-        return ExecutionHistoryJSON.builder()
-                .storyKey(story.getStoryKey())
-                .executionSteps(ExecutionStepMapper.toExecutionStepsJSON(actionExecutor.executeAction(ActionType.ASSIGN_STORY, story)))
-                .build();
+    public Map<String, ActionResult<Story>> execute(final Story story) {
+        return actionExecutor.executeAction(ActionType.ASSIGN_STORY, story);
     }
 
     @Override
