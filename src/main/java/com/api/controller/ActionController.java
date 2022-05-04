@@ -1,8 +1,11 @@
 package com.api.controller;
 
 import com.api.model.StoryInput;
+import com.api.output.ExecutionHistoryJSON;
 import com.api.workflow.IssueTrackerWorkflow;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +27,11 @@ public class ActionController {
     @PostMapping("execute")
     @Operation(summary = "Execute actions", description = "Simulate story start, implementation, pull request, and completion",
                 responses = {
-                        @ApiResponse(responseCode = "200", description = "Returns 200 if action was successfully completed")
+                        @ApiResponse(responseCode = "200", description = "Returns 200 if action was successfully completed",
+                                content = @Content(schema = @Schema(implementation = ExecutionHistoryJSON.class)))
                 }
     )
-    public void executeAction(@Valid @RequestBody StoryInput storyInput) {
-        issueTrackerWorkflow.executeAction(storyInput);
+    public ExecutionHistoryJSON executeAction(@Valid @RequestBody StoryInput storyInput) {
+        return issueTrackerWorkflow.executeAction(storyInput);
     }
 }
