@@ -1,4 +1,4 @@
-package com.api.mapper;
+package com.api.mapper.story;
 
 import com.api.output.StoryJSON;
 import com.api.entities.Story;
