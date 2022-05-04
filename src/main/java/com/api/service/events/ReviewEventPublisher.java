@@ -1,6 +1,7 @@
 package com.api.service.events;
 
 import com.actions.model.ActionCompleteEvent;
+import com.actions.model.ActionName;
 import com.api.actions.ActionType;
 import com.api.entities.Story;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +16,10 @@ public class ReviewEventPublisher {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public void publishActionReviewEvent(final Story story) {
+    public void publishActionReviewEvent(final Story story, final ActionName actionName, final String logInfo) {
 
-        log.info("Pull request review finished for story {}", story.getName());
-        ActionCompleteEvent<Story> actionCompleteEvent = new ActionCompleteEvent<>(this, ActionType.SEND_PULL_REQUEST_EVENT, story);
+        log.info(logInfo);
+        ActionCompleteEvent<Story> actionCompleteEvent = new ActionCompleteEvent<>(this, actionName, story);
         applicationEventPublisher.publishEvent(actionCompleteEvent);
     }
 }

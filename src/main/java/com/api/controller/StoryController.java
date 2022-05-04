@@ -1,5 +1,6 @@
 package com.api.controller;
 
+import com.api.entities.enums.ReviewStatus;
 import com.api.output.StoryJSON;
 import com.api.service.StoryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,11 +37,14 @@ public class StoryController {
     @PostMapping("/review")
     @Operation(summary = "Review pull request", description = "Review pull request for story",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Returns 200 if the operation was successful.")
+                    @ApiResponse(responseCode = "200", description = "Returns 200 if the operation was successful."),
+                    @ApiResponse(responseCode = "404", description = "Story not found."),
+                    @ApiResponse(responseCode = "422", description = "Story not in pull request!")
             }
     )
-    public void review(@RequestParam("storyKey") String storyKey) {
+    public void review(@RequestParam("storyKey") String storyKey,
+                       @RequestParam("reviewStatus") ReviewStatus reviewStatus) {
 
-        storyService.reviewPullRequest(storyKey);
+        storyService.reviewPullRequest(storyKey, reviewStatus);
     }
 }

@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Slf4j
-public class SendStoryCompleteNotification implements Action<Story> {
+public class StoryCompleteAction implements Action<Story> {
 
     @Override
     public ActionName getName() {

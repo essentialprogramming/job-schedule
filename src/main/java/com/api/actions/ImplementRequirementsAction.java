@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 public class ImplementRequirementsAction implements Action<Story> {
 
     private static final String FILE_PATH = "sample/code.txt";
+    private static final String FILE_WITH_CHANGES_PATH = "sample/code_changes.txt";
 
     @Override
     public ActionName getName() {
@@ -31,17 +32,24 @@ public class ImplementRequirementsAction implements Action<Story> {
     @Override
     public ActionResult<Story> execute(final Story story) {
 
-        story.setStatus(Status.IN_PROGRESS);
-        log.info("Assignee {} started working on story {}. Status {}.", story.getAssignee(), story.getName(), story.getStatus());
+        if (Status.CHANGES_REQUIRED.equals(story.getStatus())) {
 
-        typeToConsole();
+            story.setStatus(Status.IN_PROGRESS);
+            log.info("Assignee {} started applying changes on story {}. Status {}.", story.getAssignee(), story.getName(), story.getStatus());
+            typeToConsole(FILE_WITH_CHANGES_PATH);
+        } else {
+
+            story.setStatus(Status.IN_PROGRESS);
+            log.info("Assignee {} started working on story {}. Status {}.", story.getAssignee(), story.getName(), story.getStatus());
+            typeToConsole(FILE_PATH);
+        }
 
         return ActionResult.success();
     }
 
-    private static void typeToConsole() {
+    private static void typeToConsole(String filePath) {
 
-        final String code = readFile(FILE_PATH);
+        final String code = readFile(filePath);
 
         code.chars().forEach(character -> {
             System.out.printf("%c", character);
