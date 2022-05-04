@@ -1,7 +1,6 @@
 package com.actions.model;
 
 
-
 import java.util.List;
 import java.util.Map;
 
@@ -9,7 +8,7 @@ public interface Workflow<T> {
 
     /**
      * Executes the workflow. The workflow either starts where it left off or from the beginning.
-     *
+     * <p>
      * The method returns an execution history. The key is the action name and the value is the {@link ActionResult}.
      * It should have an entry for every action executed in the workflow. If the workflow fails before it reaches a
      * certain action it isn't part of the execution history. Only action which were executed are part of it.

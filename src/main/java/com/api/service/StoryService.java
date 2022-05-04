@@ -2,7 +2,7 @@ package com.api.service;
 
 import com.api.service.events.ReviewEventPublisher;
 import com.api.entities.Story;
-import com.api.mapper.StoryMapper;
+import com.api.mapper.story.StoryMapper;
 import com.api.output.StoryJSON;
 import com.api.repository.StoryRepository;
 import lombok.RequiredArgsConstructor;
