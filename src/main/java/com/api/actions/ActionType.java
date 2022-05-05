@@ -3,8 +3,6 @@ package com.api.actions;
 
 import com.actions.model.ActionName;
 
-import java.util.stream.IntStream;
-
 /**
  * This enum defines the actions to be used in the action executor.
  */

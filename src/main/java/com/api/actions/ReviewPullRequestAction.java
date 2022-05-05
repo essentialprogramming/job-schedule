@@ -30,6 +30,6 @@ public class ReviewPullRequestAction implements Action<Story> {
         }
 
         log.info("Pull request for story {} was accepted! Merging story...", story.getName());
-        return ActionResult.success();
+        return ActionResult.success(story);
     }
 }

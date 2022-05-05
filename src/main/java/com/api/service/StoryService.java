@@ -1,9 +1,10 @@
 package com.api.service;
 
+import com.actions.model.ActionCompleteEvent;
 import com.api.actions.ActionType;
 import com.api.entities.enums.ReviewStatus;
 import com.api.entities.enums.Status;
-import com.api.service.events.ReviewEventPublisher;
+import com.actions.executor.ActionCompleteEventPublisher;
 import com.api.entities.Story;
 import com.api.mapper.story.StoryMapper;
 import com.api.output.StoryJSON;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 public class StoryService {
 
     private final StoryRepository storyRepository;
-    private final ReviewEventPublisher reviewEventPublisher;
+    private final ActionCompleteEventPublisher actionCompleteEventPublisher;
 
     /**
      * Looks up and retrieves all user stories stored in the database.
@@ -41,25 +42,34 @@ public class StoryService {
         Story story = storyRepository.findByStoryKey(storyKey)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Story not found!"));
 
-        if (!Status.PULL_REQUEST.equals(story.getStatus())) {
+        if (!Status.IN_REVIEW.equals(story.getStatus())) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Story not in pull request!");
         }
 
         if (ReviewStatus.REJECTED.equals(reviewStatus)) {
-
             story.setStatus(Status.PR_REJECTED);
-            reviewEventPublisher.publishActionReviewEvent(story, ActionType.SEND_PULL_REQUEST_EVENT,
+
+            // Pull request rejected, continue with next action after SEND_PULL_REQUEST_EVENT..
+            final ActionCompleteEvent<Story> actionCompleteEvent =
+                    new ActionCompleteEvent<>(this, ActionType.SEND_PULL_REQUEST_EVENT, story);
+            actionCompleteEventPublisher.fire(actionCompleteEvent,
                     "Pull request review finished for story " + story.getName());
 
-        } else if(ReviewStatus.CHANGES_REQUIRED.equals(reviewStatus)) {
+        } else if(ReviewStatus.NEEDS_IMPROVEMENT.equals(reviewStatus)) {
+            story.setStatus(Status.NEEDS_IMPROVEMENT);
 
-            story.setStatus(Status.CHANGES_REQUIRED);
-            reviewEventPublisher.publishActionReviewEvent(story, ActionType.ASSIGN_STORY,
+            // Review complete(task needs improvement), continue with next action after ASSIGN_STORY..
+            final ActionCompleteEvent<Story> actionCompleteEvent =
+                    new ActionCompleteEvent<>(this, ActionType.ASSIGN_STORY, story);
+            actionCompleteEventPublisher.fire(actionCompleteEvent,
                     "Reimplement story " + story.getName());
 
         } else if (ReviewStatus.ACCEPTED.equals(reviewStatus)) {
 
-            reviewEventPublisher.publishActionReviewEvent(story, ActionType.SEND_PULL_REQUEST_EVENT,
+            // Review ok, continue with next action after SEND_PULL_REQUEST_EVENT..
+            final ActionCompleteEvent<Story> actionCompleteEvent =
+                    new ActionCompleteEvent<>(this, ActionType.SEND_PULL_REQUEST_EVENT, story);
+            actionCompleteEventPublisher.fire(actionCompleteEvent,
                     "Pull request review finished for story " + story.getName());
         }
     }

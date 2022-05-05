@@ -32,7 +32,7 @@ public class ImplementRequirementsAction implements Action<Story> {
     @Override
     public ActionResult<Story> execute(final Story story) {
 
-        if (Status.CHANGES_REQUIRED.equals(story.getStatus())) {
+        if (Status.NEEDS_IMPROVEMENT.equals(story.getStatus())) {
 
             story.setStatus(Status.IN_PROGRESS);
             log.info("Assignee {} started applying changes on story {}. Status {}.", story.getAssignee(), story.getName(), story.getStatus());
@@ -44,7 +44,7 @@ public class ImplementRequirementsAction implements Action<Story> {
             typeToConsole(FILE_PATH);
         }
 
-        return ActionResult.success();
+        return ActionResult.success(story);
     }
 
     private static void typeToConsole(String filePath) {

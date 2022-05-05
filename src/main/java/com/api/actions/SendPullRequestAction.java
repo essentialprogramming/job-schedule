@@ -21,7 +21,7 @@ public class SendPullRequestAction implements Action<Story> {
     @Override
     public ActionResult<Story> execute(Story story) {
 
-        story.setStatus(Status.PULL_REQUEST);
+        story.setStatus(Status.IN_REVIEW);
         log.info("Pull request for story {} has been sent. Status {}.", story.getName(), story.getStatus());
         log.info("Waiting for pull request review...");
 
