@@ -46,31 +46,41 @@ public class StoryService {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Story not in pull request!");
         }
 
-        if (ReviewStatus.REJECTED.equals(reviewStatus)) {
-            story.setStatus(Status.PR_REJECTED);
+        switch (reviewStatus) {
+            case ACCEPTED: {
 
-            // Pull request rejected, continue with next action after SEND_PULL_REQUEST_EVENT..
-            final ActionCompleteEvent<Story> actionCompleteEvent =
-                    new ActionCompleteEvent<>(this, ActionType.SEND_PULL_REQUEST_EVENT, story);
-            actionCompleteEventPublisher.fire(actionCompleteEvent,
-                    "Pull request review finished for story " + story.getName());
+                // Review ok, continue with next action after SEND_PULL_REQUEST_EVENT..
+                final ActionCompleteEvent<Story> actionCompleteEvent =
+                        new ActionCompleteEvent<>(this, ActionType.SEND_PULL_REQUEST_EVENT, story);
+                actionCompleteEventPublisher.fire(actionCompleteEvent,
+                        "Pull request review finished for story " + story.getName());
 
-        } else if(ReviewStatus.NEEDS_IMPROVEMENT.equals(reviewStatus)) {
-            story.setStatus(Status.NEEDS_IMPROVEMENT);
+                break;
+            }
+            case REJECTED: {
 
-            // Review complete(task needs improvement), continue with next action after ASSIGN_STORY..
-            final ActionCompleteEvent<Story> actionCompleteEvent =
-                    new ActionCompleteEvent<>(this, ActionType.ASSIGN_STORY, story);
-            actionCompleteEventPublisher.fire(actionCompleteEvent,
-                    "Reimplement story " + story.getName());
+                story.setStatus(Status.PR_REJECTED);
 
-        } else if (ReviewStatus.ACCEPTED.equals(reviewStatus)) {
+                // Pull request rejected, continue with next action after SEND_PULL_REQUEST_EVENT..
+                final ActionCompleteEvent<Story> actionCompleteEvent =
+                        new ActionCompleteEvent<>(this, ActionType.SEND_PULL_REQUEST_EVENT, story);
+                actionCompleteEventPublisher.fire(actionCompleteEvent,
+                        "Pull request review finished for story " + story.getName());
 
-            // Review ok, continue with next action after SEND_PULL_REQUEST_EVENT..
-            final ActionCompleteEvent<Story> actionCompleteEvent =
-                    new ActionCompleteEvent<>(this, ActionType.SEND_PULL_REQUEST_EVENT, story);
-            actionCompleteEventPublisher.fire(actionCompleteEvent,
-                    "Pull request review finished for story " + story.getName());
+                break;
+            }
+            case NEEDS_IMPROVEMENT: {
+
+                story.setStatus(Status.NEEDS_IMPROVEMENT);
+
+                // Review complete(task needs improvement), continue with next action after ASSIGN_STORY..
+                final ActionCompleteEvent<Story> actionCompleteEvent =
+                        new ActionCompleteEvent<>(this, ActionType.ASSIGN_STORY, story);
+                actionCompleteEventPublisher.fire(actionCompleteEvent,
+                        "Reimplement story " + story.getName());
+
+                break;
+            }
         }
     }
 }
