@@ -39,7 +39,7 @@ public class StoryService {
     @Transactional
     public void reviewPullRequest(String storyKey, ReviewStatus reviewStatus) {
 
-        Story story = storyRepository.findByStoryKey(storyKey)
+        final Story story = storyRepository.findByStoryKey(storyKey)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Story not found!"));
 
         if (!Status.IN_REVIEW.equals(story.getStatus())) {
@@ -58,7 +58,6 @@ public class StoryService {
                 break;
             }
             case REJECTED: {
-
                 story.setStatus(Status.PR_REJECTED);
 
                 // Pull request rejected, continue with next action after SEND_PULL_REQUEST_EVENT..
@@ -70,7 +69,6 @@ public class StoryService {
                 break;
             }
             case NEEDS_IMPROVEMENT: {
-
                 story.setStatus(Status.NEEDS_IMPROVEMENT);
 
                 // Review complete(task needs improvement), continue with next action after ASSIGN_STORY..
