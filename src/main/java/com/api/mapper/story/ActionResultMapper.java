@@ -1,23 +1,14 @@
 package com.api.mapper.story;
 
 import com.actions.model.ActionResult;
-import com.api.entities.Story;
 import com.api.output.ActionResultJSON;
-import com.api.output.StoryJSON;
 
 public class ActionResultMapper {
 
-    public static ActionResultJSON entityToJSON(final ActionResult<Story> actionResult) {
+    public static <T> ActionResultJSON entityToJSON(final ActionResult<T> actionResult) {
         return ActionResultJSON.builder()
-                .story(toStoryJSON(actionResult.getValue()))
                 .failure(actionResult.getFailure())
                 .status(actionResult.getStatus())
                 .build();
-    }
-
-    private static StoryJSON toStoryJSON(final Story story) {
-        return story != null
-                ? StoryMapper.entityToJSON(story)
-                : null;
     }
 }

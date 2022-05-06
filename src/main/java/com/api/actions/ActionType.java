@@ -11,8 +11,9 @@ public enum ActionType implements ActionName {
     ASSIGN_STORY(1),
     IMPLEMENT_REQUIREMENTS(2),
     SEND_PULL_REQUEST_EVENT(3),
-    MERGE_CHANGES(4),
-    SEND_STORY_COMPLETE_NOTIFICATION(5);
+    REVIEW_PULL_REQUEST_EVENT(4),
+    MERGE_CHANGES(5),
+    SEND_STORY_COMPLETE_NOTIFICATION(6);
 
     private final Integer executionSequence;
 

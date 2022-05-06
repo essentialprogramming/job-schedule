@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Slf4j
-public class MergeChanges implements Action<Story> {
+public class MergeChangesAction implements Action<Story> {
 
     @Override
     public ActionName getName() {
@@ -25,6 +25,6 @@ public class MergeChanges implements Action<Story> {
         story.setStatus(Status.MERGED);
         log.info("Merged changes for story {}. Status {}.", story.getName(), story.getStatus());
 
-        return ActionResult.success();
+        return ActionResult.success(story);
     }
 }

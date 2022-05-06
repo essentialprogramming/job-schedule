@@ -16,6 +16,6 @@ import java.util.List;
 @AllArgsConstructor
 public class ExecutionHistoryJSON implements Serializable {
 
-    private String storyKey;
+    private StoryJSON story;
     private List<ExecutionStepJSON> executionSteps;
 }

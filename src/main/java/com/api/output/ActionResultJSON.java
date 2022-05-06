@@ -17,7 +17,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class ActionResultJSON implements Serializable {
 
-    private StoryJSON story;
     private Failure failure;
     private ActionStatus status;
 }

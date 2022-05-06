@@ -41,8 +41,8 @@ public class IssueTrackerWorkflow implements Workflow<Story> {
         storyRepository.save(story);
 
         return ExecutionHistoryJSON.builder()
-                .storyKey(story.getStoryKey())
                 .executionSteps(ExecutionStepMapper.toExecutionStepsJSON(execute(story)))
+                .story(StoryMapper.entityToJSON(story))
                 .build();
 
     }

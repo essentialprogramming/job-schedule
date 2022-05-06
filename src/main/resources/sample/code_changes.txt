@@ -1,0 +1,9 @@
+public class HelloWorld {
+
+    /**
+    * This method prints a Hello World messages to the console.
+    */
+	public static void main(String[] args) {
+		System.out.println("Hello World!");
+	}
+}
