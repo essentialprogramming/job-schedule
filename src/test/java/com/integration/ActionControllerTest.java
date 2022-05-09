@@ -10,7 +10,13 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.core.env.Environment;
 
+import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,15 +25,21 @@ import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        classes = {com.server.MainSpringBootApplication.class, com.api.config.JPAConfig.class})
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ActionControllerTest {
 
+    @LocalServerPort
+    private int serverPort;
+
     @BeforeAll
-    static void setup() {
-        RestAssured.baseURI = "http://localhost:8080";
+    void setup() {
+        RestAssured.baseURI = "http://localhost:" + serverPort;
     }
 
     @AfterAll
-    public static void afterAll() {
+    void afterAll() {
         RestAssured.reset();
     }
 

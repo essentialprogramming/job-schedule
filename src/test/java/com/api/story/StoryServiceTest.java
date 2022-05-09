@@ -20,8 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class StoryServiceTest {
@@ -42,13 +41,14 @@ public class StoryServiceTest {
         final Story story = TestEntityGenerator.getStory(Status.PULL_REQUEST);
 
         when(storyRepository.findByStoryKey(story.getStoryKey())).thenReturn(Optional.of(story));
-        doNothing().when(reviewEventPublisher).publishActionReviewEvent(eq(story), any(), any());
+//        doNothing().when(reviewEventPublisher).publishActionReviewEvent(eq(story), any(), any());
 
         //when
         storyService.reviewPullRequest(story.getStoryKey(), ReviewStatus.REJECTED);
 
         //then
         assertEquals(Status.PR_REJECTED, story.getStatus());
+        verify(reviewEventPublisher).publishActionReviewEvent(eq(story), any(), any());
     }
 
     @Test
@@ -58,13 +58,13 @@ public class StoryServiceTest {
         final Story story = TestEntityGenerator.getStory(Status.PULL_REQUEST);
 
         when(storyRepository.findByStoryKey(story.getStoryKey())).thenReturn(Optional.of(story));
-        doNothing().when(reviewEventPublisher).publishActionReviewEvent(eq(story), any(), any());
 
         //when
         storyService.reviewPullRequest(story.getStoryKey(), ReviewStatus.CHANGES_REQUIRED);
 
         //then
         assertEquals(Status.CHANGES_REQUIRED, story.getStatus());
+        verify(reviewEventPublisher).publishActionReviewEvent(eq(story), any(), any());
     }
 
     @Test
@@ -74,13 +74,13 @@ public class StoryServiceTest {
         final Story story = TestEntityGenerator.getStory(Status.PULL_REQUEST);
 
         when(storyRepository.findByStoryKey(story.getStoryKey())).thenReturn(Optional.of(story));
-        doNothing().when(reviewEventPublisher).publishActionReviewEvent(eq(story), any(), any());
 
         //when
         storyService.reviewPullRequest(story.getStoryKey(), ReviewStatus.ACCEPTED);
 
         //then
         assertEquals(Status.PULL_REQUEST, story.getStatus());
+        verify(reviewEventPublisher).publishActionReviewEvent(eq(story), any(), any());
     }
 
     @Test

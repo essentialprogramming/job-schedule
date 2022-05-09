@@ -1,26 +1,34 @@
 package com.integration;
 
 import com.api.model.StoryInput;
-import com.api.output.ExecutionHistoryJSON;
 import com.util.TestEntityGenerator;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        classes = {com.server.MainSpringBootApplication.class, com.api.config.JPAConfig.class})
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class StoryControllerTest {
 
+    @LocalServerPort
+    private int serverPort;
+
     @BeforeAll
-    static void setup() {
-        RestAssured.baseURI = "http://localhost:8080";
+    void setup() {
+        RestAssured.baseURI = "http://localhost:" + serverPort;
     }
 
     @AfterAll
-    public static void afterAll() {
+    void afterAll() {
         RestAssured.reset();
     }
 
