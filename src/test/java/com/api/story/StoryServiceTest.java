@@ -1,11 +1,11 @@
 package com.api.story;
 
+import com.actions.executor.ActionCompleteEventPublisher;
 import com.api.entities.Story;
 import com.api.entities.enums.ReviewStatus;
 import com.api.entities.enums.Status;
 import com.api.repository.StoryRepository;
 import com.api.service.StoryService;
-import com.api.service.events.ReviewEventPublisher;
 import com.util.TestEntityGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +19,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,46 +31,45 @@ public class StoryServiceTest {
     private StoryRepository storyRepository;
 
     @Mock
-    private ReviewEventPublisher reviewEventPublisher;
+    private ActionCompleteEventPublisher actionCompleteEventPublisher;
 
     @Test
     void should_change_status_when_case_is_rejected() {
 
         //given
-        final Story story = TestEntityGenerator.getStory(Status.PULL_REQUEST);
+        final Story story = TestEntityGenerator.getStory(Status.IN_REVIEW);
 
         when(storyRepository.findByStoryKey(story.getStoryKey())).thenReturn(Optional.of(story));
-//        doNothing().when(reviewEventPublisher).publishActionReviewEvent(eq(story), any(), any());
 
         //when
         storyService.reviewPullRequest(story.getStoryKey(), ReviewStatus.REJECTED);
 
         //then
         assertEquals(Status.PR_REJECTED, story.getStatus());
-        verify(reviewEventPublisher).publishActionReviewEvent(eq(story), any(), any());
+        verify(actionCompleteEventPublisher).fire(any(), any());
     }
 
     @Test
     void should_change_status_when_case_is_changes_required() {
 
         //given
-        final Story story = TestEntityGenerator.getStory(Status.PULL_REQUEST);
+        final Story story = TestEntityGenerator.getStory(Status.IN_REVIEW);
 
         when(storyRepository.findByStoryKey(story.getStoryKey())).thenReturn(Optional.of(story));
 
         //when
-        storyService.reviewPullRequest(story.getStoryKey(), ReviewStatus.CHANGES_REQUIRED);
+        storyService.reviewPullRequest(story.getStoryKey(), ReviewStatus.NEEDS_IMPROVEMENT);
 
         //then
-        assertEquals(Status.CHANGES_REQUIRED, story.getStatus());
-        verify(reviewEventPublisher).publishActionReviewEvent(eq(story), any(), any());
+        assertEquals(Status.NEEDS_IMPROVEMENT, story.getStatus());
+        verify(actionCompleteEventPublisher).fire(any(), any());
     }
 
     @Test
     void should_keep_status_when_case_is_accepted() {
 
         //given
-        final Story story = TestEntityGenerator.getStory(Status.PULL_REQUEST);
+        final Story story = TestEntityGenerator.getStory(Status.IN_REVIEW);
 
         when(storyRepository.findByStoryKey(story.getStoryKey())).thenReturn(Optional.of(story));
 
@@ -79,15 +77,15 @@ public class StoryServiceTest {
         storyService.reviewPullRequest(story.getStoryKey(), ReviewStatus.ACCEPTED);
 
         //then
-        assertEquals(Status.PULL_REQUEST, story.getStatus());
-        verify(reviewEventPublisher).publishActionReviewEvent(eq(story), any(), any());
+        assertEquals(Status.IN_REVIEW, story.getStatus());
+        verify(actionCompleteEventPublisher).fire(any(), any());
     }
 
     @Test
     void should_throw_exception_if_story_was_not_found() {
 
         //given
-        final Story story = TestEntityGenerator.getStory(Status.PULL_REQUEST);
+        final Story story = TestEntityGenerator.getStory(Status.IN_REVIEW);
 
         when(storyRepository.findByStoryKey(story.getStoryKey())).thenReturn(Optional.empty());
 

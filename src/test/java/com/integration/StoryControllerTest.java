@@ -1,6 +1,7 @@
 package com.integration;
 
 import com.api.model.StoryInput;
+import com.api.output.StoryJSON;
 import com.util.TestEntityGenerator;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -50,7 +51,7 @@ public class StoryControllerTest {
                         .then()
                         .assertThat()
                         .statusCode(200)
-                        .extract().path("storyKey");
+                        .extract().path("story.key");
 
         RestAssured.basePath = "/v1/story";
 
@@ -84,7 +85,7 @@ public class StoryControllerTest {
                 .then()
                         .assertThat()
                         .statusCode(200)
-                        .extract().path("storyKey");
+                        .extract().path("story.key");
 
         RestAssured.basePath = "/v1/story";
 
@@ -139,7 +140,7 @@ public class StoryControllerTest {
                 .then()
                         .assertThat()
                         .statusCode(200)
-                        .extract().path("storyKey");
+                        .extract().path("story.key");
 
         RestAssured.basePath = "/v1/story";
 
