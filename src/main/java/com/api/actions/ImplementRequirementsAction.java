@@ -5,6 +5,8 @@ import com.actions.model.ActionName;
 import com.actions.model.ActionResult;
 import com.api.entities.Story;
 import com.api.entities.enums.Status;
+import com.util.io.FileInputResource;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -60,8 +62,15 @@ public class ImplementRequirementsAction implements Action<Story> {
         parkThread(700);
     }
 
+    @SneakyThrows
     private static String readFile(final String filePath) {
 
+        try (final FileInputResource fileInputResource = new FileInputResource(filePath)) {
+            return fileInputResource.getText();
+        } catch (IOException e) {
+            return "System.out.println(\"I am writing code :)\")";
+        }
+        /*
         try {
             Resource resource = new ClassPathResource(filePath);
             return new BufferedReader(new InputStreamReader(resource.getInputStream()))
@@ -71,6 +80,7 @@ public class ImplementRequirementsAction implements Action<Story> {
         } catch (IOException e) {
             return "System.out.println(\"I am writing code :)\")";
         }
+        */
     }
 
     private static void parkThread(final Integer ms) {
