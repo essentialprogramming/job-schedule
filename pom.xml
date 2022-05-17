@@ -127,6 +127,13 @@
 			<version>2.0.0</version>
 		</dependency>
 
+		<!-- JobRunr -->
+		<dependency>
+			<groupId>org.jobrunr</groupId>
+			<artifactId>jobrunr-spring-boot-starter</artifactId>
+			<version>5.1.1</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

@@ -13,12 +13,12 @@ import java.time.LocalDateTime;
 public class EnumExceptionHandler {
 
     @ExceptionHandler(ConversionFailedException.class)
-    public ResponseEntity<ExceptionJSON> handleException() {
+    public ResponseEntity<ExceptionJSON> handleException(RuntimeException ex) {
 
         ExceptionJSON outputException = ExceptionJSON.builder()
                 .status("400")
                 .error("Bad Request")
-                .message("Invalid review status! Must be of value: ACCEPTED, REJECTED, CHANGES_REQUIRED")
+                .message("Invalid enum status! " + ex.getMessage())
                 .timestamp(LocalDateTime.now().toString())
                 .build();
 

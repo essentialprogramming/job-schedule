@@ -1,7 +1,6 @@
 package com.integration;
 
 import com.api.model.StoryInput;
-import com.api.output.StoryJSON;
 import com.util.TestEntityGenerator;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -13,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = {com.server.MainSpringBootApplication.class, com.api.config.JPAConfig.class})
@@ -100,7 +99,7 @@ public class StoryControllerTest {
                 .assertThat()
                 .statusCode(400)
                 .and()
-                .body("message", equalTo("Invalid review status! Must be of value: ACCEPTED, REJECTED, CHANGES_REQUIRED"));
+                .body("message", containsString("Invalid enum status!"));
     }
 
     @Test

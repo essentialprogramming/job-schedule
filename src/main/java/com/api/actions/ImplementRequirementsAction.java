@@ -8,6 +8,9 @@ import com.api.entities.enums.Status;
 import com.util.io.FileInputResource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.jobrunr.jobs.context.JobRunrDashboardLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -19,12 +22,13 @@ import java.util.concurrent.locks.LockSupport;
 import java.util.stream.Collectors;
 
 @Component
-@Slf4j
 @SuppressWarnings({"FieldCanBeLocal", "SameParameterValue"})
 public class ImplementRequirementsAction implements Action<Story> {
 
     private static final String FILE_PATH = "sample/code.txt";
     private static final String FILE_WITH_CHANGES_PATH = "sample/code_changes.txt";
+
+    private final Logger log = new JobRunrDashboardLogger(LoggerFactory.getLogger(ImplementRequirementsAction.class));
 
     @Override
     public ActionName getName() {
