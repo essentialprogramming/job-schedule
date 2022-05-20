@@ -10,7 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.UUID;
@@ -26,7 +27,7 @@ public class JobService {
     }
 
     public void schedule(final StoryInput storyInput, final String dateTime) {
-        LocalDateTime dateAndTime = parseTime(dateTime);
+        ZonedDateTime dateAndTime = parseTime(dateTime);
 
         BackgroundJob.schedule(dateAndTime, () -> issueTrackerWorkflow.executeAction(storyInput));
     }
@@ -52,10 +53,11 @@ public class JobService {
         BackgroundJob.scheduleRecurrently(String.valueOf(UUID.randomUUID()), cron, () -> issueTrackerWorkflow.executeAction(storyInput));
     }
 
-    private LocalDateTime parseTime(final String dateTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+    private ZonedDateTime parseTime(final String dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withZone(ZoneId.of("Europe/Bucharest"));
+
         try {
-            return LocalDateTime.parse(dateTime, formatter);
+            return ZonedDateTime.parse(dateTime, formatter);
         } catch (DateTimeParseException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date and time format! Must be of format: dd/MM/yyyy HH:mm:ss");
         }
