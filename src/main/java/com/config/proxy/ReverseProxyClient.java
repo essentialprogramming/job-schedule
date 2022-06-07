@@ -42,6 +42,9 @@ public class ReverseProxyClient implements ProxyClient {
 
     @Override
     public ProxyTarget findTarget(HttpServerExchange exchange) {
+        if (apiPaths.stream().noneMatch(path -> exchange.getRequestPath().startsWith(path))) {
+            return null;
+        }
         return TARGET;
     }
 
